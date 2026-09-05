@@ -1,6 +1,0 @@
-2026-09-05 17:35:13,975 -  INFO - AI请求成功
-2026-09-05 17:36:29,814 -  INFO - AI请求成功
-2026-09-05 17:37:28,058 -  ERROR - AI请求失败HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=10)
-2026-09-05 17:37:45,878 -  ERROR - AI请求失败HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=10)
-2026-09-05 17:38:39,947 -  INFO - AI请求成功
-2026-09-05 17:38:54,999 -  INFO - AI请求成功
