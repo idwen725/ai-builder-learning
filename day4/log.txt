@@ -1,0 +1,27 @@
+## Day 4 ✓
+
+学习内容：
+- 函数参数
+- return 与 print
+- 局部变量 / 全局变量 / 作用域
+- 默认参数
+- class / object
+- __init__
+- self
+- method
+- 模块化
+- 基础重构
+
+完成：
+- function_test.py
+- Character 类
+- 将 Progress Manager 拆分为 main.py + progress_manager.py
+
+理解：
+- 函数尽量通过参数接收数据，通过 return 返回结果
+- print 是给人看的，return 是把结果交给程序
+- class 是创建某类对象的模板
+- self 表示当前对象自身
+- 对象可以保存自己的状态，方法可以修改状态
+- main.py 负责主要流程，具体功能可以拆到其他模块
+- import 模块后可以通过 模块名.函数名() 调用功能

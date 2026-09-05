@@ -1,0 +1,35 @@
+## Day 5 ✓
+
+学习：
+- Client / Server
+- HTTP / HTTPS
+- URL
+- API
+- Request / Response
+- GET
+- Status Code
+- requests
+- JSON API
+- timeout
+- RequestException
+- None
+- try / except / else
+- Separation of Concerns
+
+完成：
+- 使用 requests 调用公开 API
+- Todo Viewer
+- main.py + api_client.py 模块拆分
+- 用户输入异常处理
+- 网络请求异常处理
+
+理解：
+- Python 可以通过 HTTP 与远程服务器通信
+- API 是软件向其他软件提供的接口
+- Request 是客户端请求，Response 是服务器响应
+- JSON 常用于 API 数据交换
+- requests.get() 可以发送 GET 请求
+- response.json() 将 JSON 响应解析成 Python 数据
+- try/except 处理异常后程序仍可能继续执行
+- try 的 else 只在 try 正常完成时执行
+- API 调用成功返回 data，失败可以返回 None
