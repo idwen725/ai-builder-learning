@@ -1,4 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 class Config:
-    MODEL = "qwen3:4b"
-    URL = "http://localhost:11434/api/generate"
-    TIMEOUT = 30
+    MODEL = os.getenv("MODEL")
+    URL = os.getenv("URL")
+    TIMEOUT = int(os.getenv("TIMEOUT"))
