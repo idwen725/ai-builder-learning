@@ -9,9 +9,15 @@ class AIClient:
         self.timeout = Config.TIMEOUT
     def ask(self, history):
         start=time.time()
+        messages = []
+        for item in history:
+            messages.append(
+                item["role"]+":"+item["content"]
+            )
+        prompt="\n".join(messages)
         data = {
             "model": self.model,
-            "prompt": "\n".join(history),
+            "prompt": prompt,
             "stream": False
         }
         try:
