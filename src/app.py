@@ -19,7 +19,12 @@ class App:
                         "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     }
                 )
-                answer = self.client.ask(self.history)
+                print("AI：", end="")
+                answer = ""
+                for chunk in self.client.ask_stream(self.history):
+                    print(chunk, end="", flush=True)
+                    answer += chunk
+                print()
                 self.history.append(
                     {
                         "role":"assistant",
@@ -28,4 +33,3 @@ class App:
                     }
                 )
                 memory.save_memory(self.history)
-                print("AI：" + answer)
