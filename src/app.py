@@ -1,6 +1,7 @@
 import memory
 from ai_client import AIClient
 import datetime
+import context_manager
 class App:
     def __init__(self):
         self.client = AIClient()
@@ -29,13 +30,17 @@ class App:
                         "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     }
                 )
-                context = memory.build_context(self.history, self.long_memory,10)
+                context = context_manager.build_context(self.history, self.long_memory,1000)
                 print("AI：", end="")
                 answer = ""
                 for chunk in self.client.ask_stream(context):
                     print(chunk, end="", flush=True)
                     answer += chunk
                 print()
+                print(
+                    "Context长度:",
+                    context_manager.count_context_length(context)
+                )
                 self.history.append(
                     {
                         "role":"assistant",

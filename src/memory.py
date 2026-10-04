@@ -25,15 +25,6 @@ def load_long_term_memory():
             return fact
     except json.JSONDecodeError:
         return []
-def build_context(history, long_memory, n):
-    context = []
-    long_memory = {
-        "role": "system",
-        "content": "\n".join(long_memory)
-    }
-    context.append(long_memory)
-    context.extend(get_recent_history(history,n))
-    return context
 def save_long_term_memory(long_memory):
     data = {
         "facts": long_memory
