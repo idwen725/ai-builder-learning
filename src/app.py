@@ -33,19 +33,25 @@ class App:
                 context = context_manager.build_context(self.history, self.long_memory,1000)
                 print("AI：", end="")
                 answer = ""
-                for chunk in self.client.ask_stream(context):
-                    print(chunk, end="", flush=True)
-                    answer += chunk
+                success = False
+                try:
+                    for chunk in self.client.ask_stream(context):
+                        print(chunk, end="", flush=True)
+                        answer += chunk
+                    success = True
+                except Exception:
+                    print("\n[AI生成中断]")
                 print()
                 print(
                     "Context长度:",
                     context_manager.count_context_length(context)
                 )
-                self.history.append(
-                    {
-                        "role":"assistant",
-                        "content":answer,
-                        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                )
-                memory.save_memory(self.history)
+                if success:
+                    self.history.append(
+                        {
+                            "role":"assistant",
+                            "content":answer,
+                            "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    )
+                    memory.save_memory(self.history)
