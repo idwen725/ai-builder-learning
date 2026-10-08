@@ -9,6 +9,7 @@ class AIClient:
         self.model = Config.MODEL
         self.connect_timeout = Config.CONNECT_TIMEOUT
         self.read_timeout = Config.READ_TIMEOUT
+        self.max_retries = Config.MAX_RETRIES
     def ask(self, history):
         start=time.time()
         data = {
@@ -18,9 +19,9 @@ class AIClient:
         }
         try:
             response = requests.post(self.url, json=data,timeout=(
-    self.connect_timeout,
-    self.read_timeout
-))
+                self.connect_timeout,
+                self.read_timeout
+            ))
             response.raise_for_status()
             cost=time.time()-start
             logging.info(f"AI请求成功，耗时{cost:.2f}秒")
@@ -30,7 +31,7 @@ class AIClient:
             return "AI暂时无法响应"
 
     def ask_stream(self, history):
-        max_retries = 3
+        max_retries = self.max_retries
         has_output = False
         for attempt in range(max_retries):
             start = time.time()
@@ -75,4 +76,5 @@ class AIClient:
                     raise
                 else:
                     time.sleep(2**attempt)
+                    logging.warning(f"AI请求失败，准备第{attempt + 2}次尝试")
                     continue

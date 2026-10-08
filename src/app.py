@@ -1,12 +1,16 @@
+import os
+import logging
 import memory
 from ai_client import AIClient
 import datetime
 import context_manager
+from config import Config
 class App:
     def __init__(self):
         self.client = AIClient()
         self.history = memory.load_memory()
         self.long_memory = memory.load_long_term_memory()
+        self.context_char_budget = Config.CONTEXT_CHAR_BUDGET
     def run(self):
         while True:
             prompt = input("你：")
@@ -30,7 +34,7 @@ class App:
                         "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     }
                 )
-                context = context_manager.build_context(self.history, self.long_memory,1000)
+                context = context_manager.build_context(self.history, self.long_memory,self.context_char_budget)
                 print("AI：", end="")
                 answer = ""
                 success = False
@@ -46,6 +50,10 @@ class App:
                     "Context长度:",
                     context_manager.count_context_length(context)
                 )
+                logging.info(
+                    f"Context长度={context_manager.count_context_length(context)}, "
+                    f"回答长度={len(answer)}"
+                )
                 if success:
                     self.history.append(
                         {
@@ -54,4 +62,4 @@ class App:
                             "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         }
                     )
-                    memory.save_memory(self.history)
+                memory.save_memory(self.history)
