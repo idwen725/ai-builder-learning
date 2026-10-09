@@ -30,7 +30,7 @@ class AIClient:
             logging.error(f"AI请求失败{e}")
             return "AI暂时无法响应"
 
-    def ask_stream(self, history):
+    def ask_stream(self, history, request_id):
         max_retries = self.max_retries
         has_output = False
         for attempt in range(max_retries):
@@ -60,21 +60,28 @@ class AIClient:
                         yield chunk["message"]["content"]
                 cost = time.time() - start
                 logging.info(
+                    f"request_id={request_id} | "
                     f"AI流式请求完成，耗时{cost:.2f}秒"
                 )
                 return
             except Exception as e:
                 if has_output:
                     logging.error(
+                        f"request_id={request_id} | "
                         f"AI流式请求失败:{e}"
                     )
                     raise
                 elif attempt == max_retries - 1:
                     logging.error(
+                        f"request_id={request_id} | "
                         f"AI流式请求失败:{e}"
                     )
                     raise
                 else:
-                    time.sleep(2**attempt)
-                    logging.warning(f"AI请求失败，准备第{attempt + 2}次尝试")
+                    wait_time = 2**attempt
+                    logging.warning(
+                        f"request_id={request_id} | "
+                        f"AI请求失败，{wait_time}秒后进行第{attempt + 2}次尝试"
+                    )
+                    time.sleep(wait_time)
                     continue
