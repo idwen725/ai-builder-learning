@@ -37,3 +37,20 @@ def save_long_term_memory(long_memory):
             ensure_ascii=False,
             indent=4
         )
+def load_session_data():
+    if not os.path.exists(MEMORY_FILE):
+        return {
+            "current_session_id":None,
+            "sessions":{}
+        }
+    try:
+        with open(MEMORY_FILE,"r",encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {
+            "current_session_id":None,
+            "sessions":{}
+        }
+def save_session_data(session_data):
+    with open(MEMORY_FILE,"w",encoding="utf-8") as f:
+        json.dump(session_data,f,ensure_ascii=False,indent=4)

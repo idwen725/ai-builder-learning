@@ -30,6 +30,39 @@ class AIClient:
             logging.error(f"AI请求失败{e}")
             return "AI暂时无法响应"
 
+    def _handle_retry(
+            self,
+            request_id,
+            attempt,
+            max_retries,
+            has_output,
+            error,
+            error_name
+    ):
+        if has_output:
+            logging.error(
+                f"request_id={request_id} | "
+                f"AI流式请求已部分输出后发生{error_name}:{error}"
+            )
+            raise error
+
+        if attempt == max_retries - 1:
+            logging.error(
+                f"request_id={request_id} | "
+                f"AI发生{error_name}，已达到最大尝试次数:{error}"
+            )
+            raise error
+
+        wait_time = 2 ** attempt
+
+        logging.warning(
+            f"request_id={request_id} | "
+            f"AI发生{error_name}，"
+            f"{wait_time}秒后进行第{attempt + 2}次尝试"
+        )
+
+        time.sleep(wait_time)
+
     def ask_stream(self, history, request_id):
         max_retries = self.max_retries
         has_output = False
@@ -64,24 +97,53 @@ class AIClient:
                     f"AI流式请求完成，耗时{cost:.2f}秒"
                 )
                 return
-            except Exception as e:
-                if has_output:
-                    logging.error(
-                        f"request_id={request_id} | "
-                        f"AI流式请求失败:{e}"
+            except requests.exceptions.Timeout as e:
+                self._handle_retry(
+                    request_id,
+                    attempt,
+                    max_retries,
+                    has_output,
+                    e,
+                    "Timeout"
+                )
+                continue
+            except requests.exceptions.ConnectionError as e:
+                self._handle_retry(
+                    request_id,
+                    attempt,
+                    max_retries,
+                    has_output,
+                    e,
+                    "ConnectionError"
+                )
+                continue
+            except requests.exceptions.HTTPError as e:
+                status_code = e.response.status_code
+                if 500 <= status_code < 600:
+                    self._handle_retry(
+                        request_id,
+                        attempt,
+                        max_retries,
+                        has_output,
+                        e,
+                        f"HTTP {status_code}"
                     )
-                    raise
-                elif attempt == max_retries - 1:
-                    logging.error(
-                        f"request_id={request_id} | "
-                        f"AI流式请求失败:{e}"
-                    )
-                    raise
-                else:
-                    wait_time = 2**attempt
-                    logging.warning(
-                        f"request_id={request_id} | "
-                        f"AI请求失败，{wait_time}秒后进行第{attempt + 2}次尝试"
-                    )
-                    time.sleep(wait_time)
                     continue
+                else:
+                    logging.error(
+                        f"request_id={request_id} | "
+                        f"AI流式请求失败:{e}"
+                    )
+                    raise
+            except json.JSONDecodeError as e:
+                logging.error(
+                    f"request_id={request_id} | "
+                    f"AI流式请求失败:{e}"
+                )
+                raise
+            except Exception as e:
+                logging.error(
+                    f"request_id={request_id} | "
+                    f"AI流式请求失败:{e}"
+                )
+                raise
