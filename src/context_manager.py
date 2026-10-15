@@ -1,7 +1,3 @@
-import memory
-import json
-from transformers import AutoTokenizer
-
 def trim_history_by_chars(history, max_chars):
     result = []
     chars = 0
@@ -21,6 +17,8 @@ def build_context(history, long_memory, max_chars):
     context = []
 
     memory_text = "\n".join(long_memory)
+    if len(memory_text) > max_chars:
+        memory_text = memory_text[-max_chars:]
 
     system_message = {
         "role":"system",

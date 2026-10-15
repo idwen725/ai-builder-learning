@@ -10,26 +10,14 @@ class AIClient:
         self.connect_timeout = Config.CONNECT_TIMEOUT
         self.read_timeout = Config.READ_TIMEOUT
         self.max_retries = Config.MAX_RETRIES
-    def ask(self, history):
-        start=time.time()
-        data = {
-            "model": self.model,
-            "messages": history,
-            "stream": False
-        }
-        try:
-            response = requests.post(self.url, json=data,timeout=(
-                self.connect_timeout,
-                self.read_timeout
-            ))
-            response.raise_for_status()
-            cost=time.time()-start
-            logging.info(f"AI请求成功，耗时{cost:.2f}秒")
-            return response.json()["message"]["content"]
-        except Exception as e:
-            logging.error(f"AI请求失败{e}")
-            return "AI暂时无法响应"
-
+    def _to_api_messages(self, history):
+        result = []
+        for item in history:
+            result.append({
+                "role": item["role"],
+                "content": item["content"]
+            })
+        return result
     def _handle_retry(
             self,
             request_id,
@@ -68,9 +56,10 @@ class AIClient:
         has_output = False
         for attempt in range(max_retries):
             start = time.time()
+            messages = self._to_api_messages(history)
             data = {
                 "model": self.model,
-                "messages": history,
+                "messages": messages,
                 "stream": True
             }
             try:
