@@ -16,6 +16,8 @@ class Config:
     READ_TIMEOUT = _parse_int("READ_TIMEOUT", 30)
     CONTEXT_CHAR_BUDGET = _parse_int("CONTEXT_CHAR_BUDGET", 1000)
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    API_KEY = os.getenv("API_KEY","")
+    USER_AGENT = os.getenv("USER_AGENT","ai-builder-learning/1.0")
     @classmethod
     def validate(cls):
         if not cls.MODEL:
