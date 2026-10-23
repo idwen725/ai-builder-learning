@@ -18,6 +18,7 @@ class Config:
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     API_KEY = os.getenv("API_KEY","")
     USER_AGENT = os.getenv("USER_AGENT","ai-builder-learning/1.0")
+    OPERATION_TIMEOUT = _parse_int("OPERATION_TIMEOUT", 60)
     @classmethod
     def validate(cls):
         if not cls.MODEL:
@@ -41,3 +42,5 @@ class Config:
         }
         if cls.LOG_LEVEL.upper() not in valid_log_levels:
             raise ValueError("LOG等级错误")
+        if cls.OPERATION_TIMEOUT <=0:
+            raise ValueError("OPERATION_TIMEOUT必须大于0")
